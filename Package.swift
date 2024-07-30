@@ -17,6 +17,7 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/apple/swift-markdown.git", from: "0.2.0"),
         .package(url: "https://github.com/raspu/Highlightr.git", from: "2.1.2"),
+        .package(url: "https://github.com/aheze/MathJaxSwift.git", branch: "main"),
     ],
     targets: [
         .target(

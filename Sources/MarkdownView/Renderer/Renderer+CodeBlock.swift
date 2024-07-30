@@ -5,6 +5,42 @@ import SwiftUI
 extension Renderer {
     mutating func visitInlineCode(_ inlineCode: InlineCode) -> Result {
         var attributedString = AttributedString(stringLiteral: inlineCode.code)
+      
+       
+        if inlineCode.code.hasPrefix("$") && inlineCode.code.hasSuffix("$") {
+            print("inline latex ($ syntax)")
+            
+            
+            
+//            let textAttachment = NSTextAttachment()
+//            textAttachment.image = NSImage(systemSymbolName: "plus", accessibilityDescription: nil)!
+//            let attributedStringNew = AttributedString("Sample image \(UnicodeScalar(NSTextAttachment.character)!) done", attributes: AttributeContainer.attachment(textAttachment))
+//            
+//            
+//            return Result(SwiftUI.Text(attributedStringNew))
+            
+//            return Result(SwiftUI.Text("Here is an image:") + SwiftUI.Text(Image(systemName: "plus")))
+            
+            let image = Image(systemName: "plus")
+            return Result(SwiftUI.Text("Here is an image: \(image)"))
+            
+        }
+        
+        if inlineCode.code.hasPrefix(#"\("#) && inlineCode.code.hasSuffix(#"\)"#) {
+            print("inline latex")
+            return Result(SwiftUI.Text(attributedString))
+        }
+        
+        if inlineCode.code.hasPrefix("$$") && inlineCode.code.hasSuffix("$$") {
+            print("block latex ($$ syntax)")
+            return Result(SwiftUI.Text(attributedString))
+        }
+        
+        if inlineCode.code.hasPrefix(#"\["#) && inlineCode.code.hasSuffix(#"\["#) {
+            print("block latex")
+            return Result(SwiftUI.Text(attributedString))
+        }
+        
         attributedString.foregroundColor = configuration.inlineCodeTintColor
         attributedString.backgroundColor = configuration.inlineCodeTintColor.opacity(0.1)
         return Result(SwiftUI.Text(attributedString))
