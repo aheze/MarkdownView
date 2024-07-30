@@ -1,6 +1,6 @@
-import SwiftUI
-import Markdown
 import Combine
+import Markdown
+import SwiftUI
 
 /// A view to render markdown text.
 public struct MarkdownView: View {
@@ -8,8 +8,7 @@ public struct MarkdownView: View {
     var baseURL: URL?
 
     @State private var viewSize = CGSize.zero
-    @State private var scrollViewRef = ScrollProxyRef.shared
-    
+
     @Environment(\.markdownRenderingMode) private var renderingMode
     @Environment(\.markdownRenderingThread) private var renderingThread
     @Environment(\.lineSpacing) private var lineSpacing
@@ -29,7 +28,7 @@ public struct MarkdownView: View {
     // Update content 0.3s after the user stops entering.
     @StateObject private var contentUpdater = ContentUpdater()
     @State private var representedView = AnyView(EmptyView()) // RenderedView
-    
+
     /// Parse the Markdown and render it as a single `View`.
     /// - Parameters:
     ///   - text: A Binding Text that can be modified.
@@ -40,7 +39,7 @@ public struct MarkdownView: View {
             self.baseURL = baseURL
         }
     }
-    
+
     /// Parse the Markdown and render it as a single view.
     /// - Parameters:
     ///   - text: Markdown Text.
@@ -51,9 +50,9 @@ public struct MarkdownView: View {
             self.baseURL = baseURL
         }
     }
-    
+
     public var body: some View {
-        ScrollViewReader { scrollProxy in
+        VStack {
             if renderingThread == .main {
                 _makeView(text: text)
             } else {
@@ -65,7 +64,6 @@ public struct MarkdownView: View {
                             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                     }
                 }
-                .onAppear { scrollViewRef.proxy = scrollProxy }
             }
         }
         .sizeOfView($viewSize)
@@ -89,12 +87,12 @@ public struct MarkdownView: View {
         .task(id: configuration) { makeView(text: text) }
         .task(id: baseURL) { imageRenderer.baseURL = baseURL ?? imageRenderer.baseURL }
     }
-    
+
     private func makeView(text: String) {
         representedView = _makeView(text: text)
         MarkdownTextStorage.default.text = text
     }
-    
+
     private func _makeView(text: String) -> AnyView {
         var renderer = Renderer(
             text: text,
@@ -110,6 +108,8 @@ public struct MarkdownView: View {
         )
         let parseBD = !blockDirectiveRenderer.providers.isEmpty
         return renderer.representedView(parseBlockDirectives: parseBD)
+        
+//        return AnyView(Text("Rendered").font(.largeTitle))
     }
 }
 
