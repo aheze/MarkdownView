@@ -8,14 +8,26 @@
 import MathJaxSwift
 import SwiftUI
 
-enum LatexRenderer {
-    enum LatexRendererError: Error {
+public enum LatexRenderer {
+    public enum LatexRendererError: Error {
         case mathJaxUninitialized
         case svgNoData
         case couldNotCreateSVG
     }
     
-    static var mathJax: MathJax? = {
+    public struct CachedImage {
+        var svgImageScale: CGFloat
+        var image: Image
+    }
+    
+    // key: latexString, value: image
+    public static var cache = [String: CachedImage]()
+    
+    public static func flushCache() {
+        cache = [:]
+    }
+    
+    public static var mathJax: MathJax? = {
         do {
             let mathJax = try MathJax()
             return mathJax
@@ -26,15 +38,25 @@ enum LatexRenderer {
         return nil
     }()
     
-    static var texOptions = TeXInputProcessorOptions(loadPackages: [TeXInputProcessorOptions.Packages.ams, TeXInputProcessorOptions.Packages.amscd])
+    public static var texOptions = TeXInputProcessorOptions(loadPackages: [TeXInputProcessorOptions.Packages.ams, TeXInputProcessorOptions.Packages.amscd])
     
-    static func renderImage(latexString: String, svgImageScale: CGFloat = 0.1) throws -> Image {
+    public static func renderImage(latexString: String, svgImageScale: CGFloat = 0.1) throws -> Image {
+        if let cachedImage = cache[latexString] {
+            if cachedImage.svgImageScale == svgImageScale {
+                return cachedImage.image
+            } else {
+                // remove the cached image, because the scale is wrong
+                cache[latexString] = nil
+            }
+        }
+        
         let svgString = try renderSVG(latexString: latexString)
         let image = try svgToImage(svgString: svgString, svgImageScale: svgImageScale)
+        cache[latexString] = CachedImage(svgImageScale: svgImageScale, image: image)
         return image
     }
     
-    static func renderSVG(latexString: String) throws -> String {
+    public static func renderSVG(latexString: String) throws -> String {
         guard let mathJax else { throw LatexRendererError.mathJaxUninitialized }
         var latexSVG = try mathJax.tex2svg(latexString, inputOptions: texOptions)
         
@@ -47,7 +69,7 @@ enum LatexRenderer {
         return latexSVG
     }
     
-    static func svgToImage(svgString: String, svgImageScale: CGFloat) throws -> Image {
+    public static func svgToImage(svgString: String, svgImageScale: CGFloat) throws -> Image {
         guard let data = svgString.data(using: .utf8) else { throw LatexRendererError.svgNoData }
         guard let svg = CoreSVG(data) else { throw LatexRendererError.couldNotCreateSVG }
 
