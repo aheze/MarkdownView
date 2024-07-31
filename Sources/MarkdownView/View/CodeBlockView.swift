@@ -15,10 +15,6 @@ struct HighlightedCodeBlock: View {
     @State private var attributedCode: AttributedString?
     @State private var showCopyButton = false
 
-    private var id: String {
-        "\(colorScheme) mode" + (language ?? "No Language Name") + code
-    }
-
     var body: some View {
         Group {
             if let attributedCode {
@@ -27,7 +23,6 @@ struct HighlightedCodeBlock: View {
                 SwiftUI.Text(code)
             }
         }
-        .task(id: id, highlight)
         .lineSpacing(5)
         .font(font.codeBlock)
         .padding()
@@ -48,6 +43,25 @@ struct HighlightedCodeBlock: View {
             codeLanguage
         }
         .onHover { showCopyButton = $0 }
+        .task(id: colorScheme) {
+            let theme = colorScheme == .dark ? theme.darkModeThemeName : theme.lightModeThemeName
+            Highlightr.shared?.setTheme(to: theme)
+            await highlight()
+        }
+        .onChange(of: theme) { newTheme in
+            let theme = colorScheme == .dark ? newTheme.darkModeThemeName : newTheme.lightModeThemeName
+            Highlightr.shared?.setTheme(to: theme)
+            Task {
+                await highlight()
+            }
+        }
+        .onChange(of: colorScheme) { newColorTheme in
+            let theme = newColorTheme == .dark ? theme.darkModeThemeName : theme.lightModeThemeName
+            Highlightr.shared?.setTheme(to: theme)
+            Task {
+                await highlight()
+            }
+        }
     }
 
     @ViewBuilder
@@ -94,6 +108,10 @@ struct CodeHighlighterUpdator: ViewModifier {
         }
         .onChange(of: theme) { newTheme in
             let theme = colorScheme == .dark ? newTheme.darkModeThemeName : newTheme.lightModeThemeName
+            Highlightr.shared?.setTheme(to: theme)
+        }
+        .onChange(of: colorScheme) { newColorTheme in
+            let theme = newColorTheme == .dark ? theme.darkModeThemeName : theme.lightModeThemeName
             Highlightr.shared?.setTheme(to: theme)
         }
         #endif

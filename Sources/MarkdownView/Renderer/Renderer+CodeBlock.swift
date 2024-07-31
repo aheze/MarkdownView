@@ -35,7 +35,9 @@ extension Renderer {
                     latexString: latexString,
                     svgImageScale: svgImageScale
                 )
-                return Result(SwiftUI.Text(image))
+                .renderingMode(.template)
+                
+                return Result(SwiftUI.Text(image).foregroundColor(.primary))
             } catch {
                 print("Inline LaTeX error: \(error)")
             }

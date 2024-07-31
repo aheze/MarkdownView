@@ -70,7 +70,6 @@ public struct MarkdownView: View {
             }
         }
         .containerSize(viewSize)
-        .updateCodeBlocksWhenColorSchemeChanges()
         .font(fontGroup.body) // Default font
         .if(renderingMode == .optimized && renderingThread == .background) { content in
             content
