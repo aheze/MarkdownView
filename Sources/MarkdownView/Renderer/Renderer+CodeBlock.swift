@@ -2,28 +2,25 @@ import Markdown
 import SwiftUI
 
 // MARK: - Inline Code Block
+
 extension Renderer {
     mutating func visitInlineCode(_ inlineCode: InlineCode) -> Result {
         var attributedString = AttributedString(stringLiteral: inlineCode.code)
       
-       
         if inlineCode.code.hasPrefix("$") && inlineCode.code.hasSuffix("$") {
             print("inline latex ($ syntax)")
             
+            let latex = String(inlineCode.code.dropFirst().dropLast())
             
-            
-//            let textAttachment = NSTextAttachment()
-//            textAttachment.image = NSImage(systemSymbolName: "plus", accessibilityDescription: nil)!
-//            let attributedStringNew = AttributedString("Sample image \(UnicodeScalar(NSTextAttachment.character)!) done", attributes: AttributeContainer.attachment(textAttachment))
-//            
-//            
-//            return Result(SwiftUI.Text(attributedStringNew))
-            
-//            return Result(SwiftUI.Text("Here is an image:") + SwiftUI.Text(Image(systemName: "plus")))
+            do {
+                let image = try LatexRenderer.renderImage(latexString: latex)
+                return Result(SwiftUI.Text(image))
+            } catch {
+                print("Error: \(error)")
+            }
             
             let image = Image(systemName: "plus")
             return Result(SwiftUI.Text("Here is an image: \(image)"))
-            
         }
         
         if inlineCode.code.hasPrefix(#"\("#) && inlineCode.code.hasSuffix(#"\)"#) {

@@ -26,12 +26,15 @@ enum LatexRenderer {
         return nil
     }()
     
+    // scale down the svg
+    static var svgImageScale = CGFloat(0.12)
+    
     static var texOptions = TeXInputProcessorOptions(loadPackages: [TeXInputProcessorOptions.Packages.ams, TeXInputProcessorOptions.Packages.amscd])
     
     static func renderImage(latexString: String) throws -> Image {
-        guard let mathJax else { throw LatexRendererError.mathJaxUninitialized }
-        
-        throw LatexRendererError.mathJaxUninitialized
+        let svgString = try renderSVG(latexString: latexString)
+        let image = try svgToImage(svgString: svgString)
+        return image
     }
     
     static func renderSVG(latexString: String) throws -> String {
@@ -49,20 +52,36 @@ enum LatexRenderer {
     
     static func svgToImage(svgString: String) throws -> Image {
         guard let data = svgString.data(using: .utf8) else { throw LatexRendererError.svgNoData }
-//        guard let svg = SVG(data) else { throw LatexRendererError.couldNotCreateSVG }
-        
-        throw LatexRendererError.couldNotCreateSVG
+        guard let svg = CoreSVG(data) else { throw LatexRendererError.couldNotCreateSVG }
 
+        let size = CGSize(width: svg.size.width * svgImageScale, height: svg.size.height * svgImageScale)
+        
         #if os(macOS)
-//        let image = NSImage(size: svg.size)
-//        image.lockFocus()
-//        svg.draw(in: NSRect(origin: .zero, size: svg.size))
-//        image.unlockFocus()
-//        return Image(nsImage: image)
+        
+        let image = NSImage(size: size)
+        image.lockFocus()
+        if let context = NSGraphicsContext.current?.cgContext {
+            // Save the current graphics state
+            context.saveGState()
+              
+            // Flip the coordinate system
+            context.translateBy(x: 0, y: size.height)
+            context.scaleBy(x: svgImageScale, y: -svgImageScale)
+              
+            // Draw the SVG
+            svg.draw(in: context)
+              
+            // Restore the graphics state
+            context.restoreGState()
+        }
+        image.unlockFocus()
+        return Image(nsImage: image)
         
         #else
-        let renderer = UIGraphicsImageRenderer(size: svg.size)
+        
+        let renderer = UIGraphicsImageRenderer(size: size)
         let image = renderer.image { context in
+            context.cgContext.scaleBy(x: svgImageScale, y: svgImageScale)
             svg.draw(in: context.cgContext)
         }
         return Image(uiImage: image)
