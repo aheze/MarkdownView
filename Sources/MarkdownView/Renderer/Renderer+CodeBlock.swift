@@ -7,35 +7,33 @@ extension Renderer {
     mutating func visitInlineCode(_ inlineCode: InlineCode) -> Result {
         var attributedString = AttributedString(stringLiteral: inlineCode.code)
       
-        if inlineCode.code.hasPrefix("$") && inlineCode.code.hasSuffix("$") {
-            print("inline latex ($ syntax)")
+        let latex: String? = {
+            if inlineCode.code.hasPrefix("$") && inlineCode.code.hasSuffix("$") {
+                return String(inlineCode.code.dropFirst().dropLast())
+            }
             
-            let latex = String(inlineCode.code.dropFirst().dropLast())
+            if inlineCode.code.hasPrefix(#"\("#) && inlineCode.code.hasSuffix(#"\)"#) {
+                return String(inlineCode.code.dropFirst(2).dropLast(2))
+            }
             
+            if inlineCode.code.hasPrefix("$$") && inlineCode.code.hasSuffix("$$") {
+                return String(inlineCode.code.dropFirst(2).dropLast(2))
+            }
+            
+            if inlineCode.code.hasPrefix(#"\["#) && inlineCode.code.hasSuffix(#"\["#) {
+                return String(inlineCode.code.dropFirst(2).dropLast(2))
+            }
+            
+            return nil
+        }()
+        
+        if let latex {
             do {
                 let image = try LatexRenderer.renderImage(latexString: latex)
                 return Result(SwiftUI.Text(image))
             } catch {
-                print("Error: \(error)")
+                print("Inline LaTeX error: \(error)")
             }
-            
-            let image = Image(systemName: "plus")
-            return Result(SwiftUI.Text("Here is an image: \(image)"))
-        }
-        
-        if inlineCode.code.hasPrefix(#"\("#) && inlineCode.code.hasSuffix(#"\)"#) {
-            print("inline latex")
-            return Result(SwiftUI.Text(attributedString))
-        }
-        
-        if inlineCode.code.hasPrefix("$$") && inlineCode.code.hasSuffix("$$") {
-            print("block latex ($$ syntax)")
-            return Result(SwiftUI.Text(attributedString))
-        }
-        
-        if inlineCode.code.hasPrefix(#"\["#) && inlineCode.code.hasSuffix(#"\["#) {
-            print("block latex")
-            return Result(SwiftUI.Text(attributedString))
         }
         
         attributedString.foregroundColor = configuration.inlineCodeTintColor

@@ -26,14 +26,11 @@ enum LatexRenderer {
         return nil
     }()
     
-    // scale down the svg
-    static var svgImageScale = CGFloat(0.12)
-    
     static var texOptions = TeXInputProcessorOptions(loadPackages: [TeXInputProcessorOptions.Packages.ams, TeXInputProcessorOptions.Packages.amscd])
     
-    static func renderImage(latexString: String) throws -> Image {
+    static func renderImage(latexString: String, svgImageScale: CGFloat = 0.1) throws -> Image {
         let svgString = try renderSVG(latexString: latexString)
-        let image = try svgToImage(svgString: svgString)
+        let image = try svgToImage(svgString: svgString, svgImageScale: svgImageScale)
         return image
     }
     
@@ -50,7 +47,7 @@ enum LatexRenderer {
         return latexSVG
     }
     
-    static func svgToImage(svgString: String) throws -> Image {
+    static func svgToImage(svgString: String, svgImageScale: CGFloat) throws -> Image {
         guard let data = svgString.data(using: .utf8) else { throw LatexRendererError.svgNoData }
         guard let svg = CoreSVG(data) else { throw LatexRendererError.couldNotCreateSVG }
 
