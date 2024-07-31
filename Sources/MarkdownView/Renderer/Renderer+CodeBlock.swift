@@ -5,8 +5,6 @@ import SwiftUI
 
 extension Renderer {
     mutating func visitInlineCode(_ inlineCode: InlineCode) -> Result {
-        var attributedString = AttributedString(stringLiteral: inlineCode.code)
-      
         let latexString: String? = {
             if inlineCode.code.hasPrefix("$$") && inlineCode.code.hasSuffix("$$") {
                 return String(inlineCode.code.dropFirst(2).dropLast(2))
@@ -43,8 +41,11 @@ extension Renderer {
             }
         }
         
+        var attributedString = AttributedString(stringLiteral: "\(inlineCode.code)")
         attributedString.foregroundColor = configuration.inlineCodeTintColor
-        attributedString.backgroundColor = configuration.inlineCodeTintColor.opacity(0.1)
+        attributedString.backgroundColor = configuration.inlineCodeTintColor.opacity(0.05)
+        attributedString.font = .monospaced(.body)()
+
         return Result(SwiftUI.Text(attributedString))
     }
     
