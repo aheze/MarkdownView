@@ -13,36 +13,31 @@ struct HighlightedCodeBlock: View {
     @Environment(\.fontGroup) private var font
     @Environment(\.colorScheme) private var colorScheme
     @State private var attributedCode: AttributedString?
-    @State private var showCopyButton = false
 
     var body: some View {
-        Group {
-            if let attributedCode {
-                SwiftUI.Text(attributedCode)
-            } else {
-                SwiftUI.Text(code)
+        VStack(spacing: 0) {
+            HStack {
+                codeLanguage
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                CopyButton(content: code)
             }
+            .padding(.bottom, 8)
+
+            Group {
+                if let attributedCode {
+                    SwiftUI.Text(attributedCode)
+                } else {
+                    SwiftUI.Text(code)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
         .lineSpacing(5)
         .font(font.codeBlock)
-        .padding()
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(.quaternary.opacity(0.5), in: RoundedRectangle(cornerRadius: 8))
-        .gesture(
-            TapGesture()
-                .onEnded { _ in showCopyButton.toggle() }
-        )
-        .overlay(alignment: .topTrailing) {
-            if showCopyButton {
-                CopyButton(content: code)
-                    .padding(8)
-                    .transition(.opacity.animation(.easeInOut))
-            }
-        }
-        .overlay(alignment: .bottomTrailing) {
-            codeLanguage
-        }
-        .onHover { showCopyButton = $0 }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 12)
+        .background(.primary.opacity(0.05), in: RoundedRectangle(cornerRadius: 8))
         .task(id: colorScheme) {
             let theme = colorScheme == .dark ? theme.darkModeThemeName : theme.lightModeThemeName
             Highlightr.shared?.setTheme(to: theme)
@@ -68,8 +63,7 @@ struct HighlightedCodeBlock: View {
     private var codeLanguage: some View {
         if let language {
             SwiftUI.Text(language.uppercased())
-                .font(.callout)
-                .padding(8)
+                .font(.callout.monospaced())
                 .foregroundStyle(.secondary)
         }
     }

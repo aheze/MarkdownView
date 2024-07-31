@@ -36,7 +36,7 @@ public struct CodeHighlighterTheme: Equatable {
 
 struct CodeHighlighterThemeKey: EnvironmentKey {
     static var defaultValue: CodeHighlighterTheme = CodeHighlighterTheme(
-        lightModeThemeName: "xcode", darkModeThemeName: "dark"
+        lightModeThemeName: "color-brewer", darkModeThemeName: "ir-black"
     )
 }
 

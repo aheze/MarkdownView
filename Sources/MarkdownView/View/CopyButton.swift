@@ -13,32 +13,28 @@ struct CopyButton: View {
     
     var body: some View {
         Button(action: copy) {
-            Group {
-                if copied {
-                    Image(systemName: "checkmark")
-                        .transition(.opacity.combined(with: .scale))
-                } else {
-                    Image(systemName: "doc.on.clipboard")
-                        .transition(.opacity.combined(with: .scale))
+            HStack(spacing: 6) {
+                VStack {
+                    if copied {
+                        Image(systemName: "checkmark")
+                            .transition(.opacity.combined(with: .scale(scale: 0.9)))
+                        
+                    } else {
+                        Image(systemName: "doc.on.clipboard")
+                            .transition(.opacity.combined(with: .scale(scale: 0.9)))
+                    }
                 }
+                .scaleEffect(1)
+                
+                Text(copied ? "Copied!" : "Copy")
+                    .transition(.identity)
+                    .animation(nil)
             }
-            .font(.system(size: size))
-            .frame(width: size, height: size)
-            .padding(8)
+            .scaleEffect(1)
             .contentShape(Rectangle())
         }
         .foregroundStyle(.primary)
-        .background(
-            .quaternary.opacity(0.2),
-            in: RoundedRectangle(cornerRadius: 5, style: .continuous)
-        )
-        .overlay {
-            RoundedRectangle(cornerRadius: 5, style: .continuous)
-                .stroke(.quaternary, lineWidth: 1)
-        }
-        .brightness(isHovering ? 0.3 : 0)
-        .buttonStyle(.borderless) // Only use `.borderless` can behave correctly when text selection is enabled.
-        .onHover { isHovering = $0 }
+        .buttonStyle(.plain) // Only use `.borderless` can behave correctly when text selection is enabled.
     }
     
     private func copy() {
@@ -49,14 +45,22 @@ struct CopyButton: View {
         UIPasteboard.general.string = content
         #endif
         Task {
-            withAnimation(.spring()) {
+            withAnimation(.spring(response: 0.2, dampingFraction: 1, blendDuration: 1)) {
                 copied = true
             }
-            try await Task.sleep(nanoseconds: 2_000_000_000)
-            withAnimation(.spring()) {
+            
+            try await Task.sleep(for: .seconds(2.0))
+            
+            withAnimation(.spring(response: 0.4, dampingFraction: 1, blendDuration: 1)) {
                 copied = false
             }
         }
     }
 }
 #endif
+
+struct UnstyledButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+    }
+}
