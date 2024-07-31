@@ -14,17 +14,16 @@ struct CopyButton: View {
     var body: some View {
         Button(action: copy) {
             HStack(spacing: 6) {
-                VStack {
-                    if copied {
-                        Image(systemName: "checkmark")
-                            .transition(.opacity.combined(with: .scale(scale: 0.9)))
-                        
-                    } else {
+                // use checkmark as base because it's not that tall
+                Image(systemName: "checkmark")
+                    .transition(.opacity.combined(with: .scale(scale: 0.9)))
+                    .scaleEffect(copied ? 1 : 0.8)
+                    .opacity(copied ? 1 : 0)
+                    .overlay {
                         Image(systemName: "doc.on.clipboard")
-                            .transition(.opacity.combined(with: .scale(scale: 0.9)))
+                            .scaleEffect(!copied ? 1 : 0.8)
+                            .opacity(!copied ? 1 : 0)
                     }
-                }
-                .scaleEffect(1)
                 
                 Text(copied ? "Copied!" : "Copy")
                     .transition(.identity)

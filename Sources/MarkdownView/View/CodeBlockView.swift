@@ -21,8 +21,10 @@ struct HighlightedCodeBlock: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
 
                 CopyButton(content: code)
+                    .scaleEffect(0.9, anchor: .trailing) // make slightly smaller
             }
-            .padding(.bottom, 8)
+            .font(.callout)
+            .padding(.bottom, 12)
 
             Group {
                 if let attributedCode {
