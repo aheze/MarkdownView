@@ -20,7 +20,7 @@ extension Renderer {
                 return String(inlineCode.code.dropFirst(2).dropLast(2))
             }
             
-            if inlineCode.code.hasPrefix(#"\["#) && inlineCode.code.hasSuffix(#"\["#) {
+            if inlineCode.code.hasPrefix(#"\["#) && inlineCode.code.hasSuffix(#"\]"#) {
                 return String(inlineCode.code.dropFirst(2).dropLast(2))
             }
             

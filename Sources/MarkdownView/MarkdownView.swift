@@ -28,7 +28,6 @@ public struct MarkdownView: View {
     @Environment(\.svgImageScaleMultiplier) private var svgImageScaleMultiplier
     @ScaledMetric(relativeTo: .body) var svgImageScale = 1.0
 
-
     // Update content 0.3s after the user stops entering.
     @StateObject private var contentUpdater = ContentUpdater()
     @State private var representedView = AnyView(EmptyView()) // RenderedView
