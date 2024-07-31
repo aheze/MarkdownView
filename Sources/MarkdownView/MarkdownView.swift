@@ -91,10 +91,8 @@ public struct MarkdownView: View {
     }
 
     private func makeView(text: String) {
-        let timer = TimeElapsed()
         representedView = _makeView(text: text)
         MarkdownTextStorage.default.text = text
-        print("done: \(timer)")
     }
 
     private func _makeView(text: String) -> AnyView {
@@ -134,28 +132,3 @@ extension MarkdownView {
         )
     }
 }
-
-class TimeElapsed: CustomStringConvertible {
-    private let startTime: CFAbsoluteTime
-    private var endTime: CFAbsoluteTime?
-    
-    init() {
-        startTime = CFAbsoluteTimeGetCurrent()
-    }
-    
-    var description: String {
-        time
-    }
-    
-    var time: String {
-        let format = String(format: "%.5f", duration)
-        let string = "[\(format)s]"
-        return string
-    }
-    
-    var duration: Double {
-        let endTime = CFAbsoluteTimeGetCurrent()
-        return endTime - startTime
-    }
-}
-
