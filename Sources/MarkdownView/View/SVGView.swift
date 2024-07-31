@@ -23,7 +23,6 @@ struct SVGView: View {
         .disabled(disableInteractions)
         .frame(maxWidth: SVGSize.width == .zero ? containerSize.width : SVGSize.width)
         .frame(height: SVGSize.height)
-        .widthOfView($viewWidth)
     }
     
     private var disableInteractions: Bool {

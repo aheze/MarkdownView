@@ -9,6 +9,7 @@ import CoreGraphics
 import Darwin
 import Foundation
 
+// from https://gist.github.com/ollieatkinson/eb87a82fcb5500d5561fed8b0900a9f7
 // https://github.com/xybp888/iOS-SDKs/blob/master/iPhoneOS17.1.sdk/System/Library/PrivateFrameworks/CoreSVG.framework/CoreSVG.tbd
 // https://developer.limneos.net/index.php?ios=17.1&framework=UIKitCore.framework&header=UIImage.h
 

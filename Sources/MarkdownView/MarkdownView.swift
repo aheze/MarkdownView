@@ -66,7 +66,6 @@ public struct MarkdownView: View {
                 }
             }
         }
-        .sizeOfView($viewSize)
         .containerSize(viewSize)
         .updateCodeBlocksWhenColorSchemeChanges()
         .font(fontGroup.body) // Default font
