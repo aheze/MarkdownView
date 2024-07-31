@@ -26,4 +26,6 @@ struct RendererConfiguration: Equatable {
 
     var listIndent: CGFloat
     var unorderedListBullet: String
+    
+    var tableOptions: TableOptions
 }

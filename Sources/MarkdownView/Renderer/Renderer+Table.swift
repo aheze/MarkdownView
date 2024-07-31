@@ -4,11 +4,14 @@ import SwiftUI
 extension Renderer {
     mutating func visitTable(_ table: Markdown.Table) -> Result {
         Result {
-            Grid(horizontalSpacing: 8, verticalSpacing: 8) {
+            Grid(horizontalSpacing: 0, verticalSpacing: 0) {
                 GridRow { visitTableHead(table.head).content }
                 visitTableBody(table.body).content
             }
-            .modifier(_TableViewModifier())
+            .overlay {
+                Rectangle()
+                    .stroke(configuration.tableOptions.strokeColor, lineWidth: configuration.tableOptions.strokeWidth)
+            }
         }
     }
 
@@ -17,10 +20,13 @@ extension Renderer {
             let contents = contents(of: head)
             let font = configuration.fontGroup.tableHeader
             let foregroundStyle = configuration.foregroundStyleGroup.tableHeader
+            let cellPadding = configuration.tableOptions.cellPadding
+
             ForEach(contents.indices, id: \.self) {
                 contents[$0].content
                     .font(font)
                     .foregroundStyle(foregroundStyle)
+                    .padding(cellPadding)
             }
         }
     }
@@ -30,11 +36,15 @@ extension Renderer {
             let contents = contents(of: body)
             let font = configuration.fontGroup.tableBody
             let foregroundStyle = configuration.foregroundStyleGroup.tableBody
+            let cellPadding = configuration.tableOptions.cellPadding
+
             ForEach(contents.indices, id: \.self) {
                 Divider()
+
                 contents[$0].content
                     .font(font)
                     .foregroundStyle(foregroundStyle)
+                    .padding(cellPadding)
             }
         }
     }

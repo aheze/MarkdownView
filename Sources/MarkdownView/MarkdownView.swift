@@ -24,6 +24,7 @@ public struct MarkdownView: View {
     @Environment(\.componentSpacing) private var componentSpacing
     @Environment(\.listIndent) private var listIndent
     @Environment(\.unorderedListBullet) private var unorderedListBullet
+    @Environment(\.tableOptions) private var tableOptions
 
     // Update content 0.3s after the user stops entering.
     @StateObject private var contentUpdater = ContentUpdater()
@@ -107,8 +108,6 @@ public struct MarkdownView: View {
         )
         let parseBD = !blockDirectiveRenderer.providers.isEmpty
         return renderer.representedView(parseBlockDirectives: parseBD)
-        
-//        return AnyView(Text("Rendered").font(.largeTitle))
     }
 }
 
@@ -124,7 +123,8 @@ extension MarkdownView {
             foregroundStyleGroup: foregroundStyleGroup,
             codeBlockTheme: codeHighlighterTheme,
             listIndent: listIndent,
-            unorderedListBullet: unorderedListBullet
+            unorderedListBullet: unorderedListBullet,
+            tableOptions: tableOptions
         )
     }
 }
