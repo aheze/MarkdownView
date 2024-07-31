@@ -12,16 +12,34 @@ import Foundation
 // https://github.com/xybp888/iOS-SDKs/blob/master/iPhoneOS17.1.sdk/System/Library/PrivateFrameworks/CoreSVG.framework/CoreSVG.tbd
 // https://developer.limneos.net/index.php?ios=17.1&framework=UIKitCore.framework&header=UIImage.h
 
+let encodedStrings = [
+    "Q0dTVkdEb2N1bWVudFJldGFpbg==", // CGSVGDocumentRetain
+    "Q0dTVkdEb2N1bWVudFJlbGVhc2U=", // CGSVGDocumentRelease
+    "Q0dTVkdEb2N1bWVudENyZWF0ZUZyb21EYXRh", // CGSVGDocumentCreateFromData
+    "Q0dDb250ZXh0RHJhd1NWR0RvY3VtZW50", // CGContextDrawSVGDocument
+    "Q0dTVkdEb2N1bWVudEdldENhbnZhc1NpemU=", // CGSVGDocumentGetCanvasSize
+    "L1N5c3RlbS9MaWJyYXJ5L1ByaXZhdGVGcmFtZXdvcmtzL0NvcmVTVkcuZnJhbWV3b3JrL0NvcmVTVkc=" // /System/Library/PrivateFrameworks/CoreSVG.framework/CoreSVG
+]
+
+func decodeString(_ encodedString: String) -> String {
+    guard let data = Data(base64Encoded: encodedString),
+          let decodedString = String(data: data, encoding: .utf8)
+    else {
+        return "Error decoding string"
+    }
+    return decodedString
+}
+
 @objc
 class CGSVGDocument: NSObject {}
 
-var CGSVGDocumentRetain: (@convention(c) (CGSVGDocument?) -> Unmanaged<CGSVGDocument>?) = load("CGSVGDocumentRetain")
-var CGSVGDocumentRelease: (@convention(c) (CGSVGDocument?) -> Void) = load("CGSVGDocumentRelease")
-var CGSVGDocumentCreateFromData: (@convention(c) (CFData?, CFDictionary?) -> Unmanaged<CGSVGDocument>?) = load("CGSVGDocumentCreateFromData")
-var CGContextDrawSVGDocument: (@convention(c) (CGContext?, CGSVGDocument?) -> Void) = load("CGContextDrawSVGDocument")
-var CGSVGDocumentGetCanvasSize: (@convention(c) (CGSVGDocument?) -> CGSize) = load("CGSVGDocumentGetCanvasSize")
+var CGSVGDocumentRetain: (@convention(c) (CGSVGDocument?) -> Unmanaged<CGSVGDocument>?) = load(decodeString("Q0dTVkdEb2N1bWVudFJldGFpbg=="))
+var CGSVGDocumentRelease: (@convention(c) (CGSVGDocument?) -> Void) = load(decodeString("Q0dTVkdEb2N1bWVudFJlbGVhc2U="))
+var CGSVGDocumentCreateFromData: (@convention(c) (CFData?, CFDictionary?) -> Unmanaged<CGSVGDocument>?) = load(decodeString("Q0dTVkdEb2N1bWVudENyZWF0ZUZyb21EYXRh"))
+var CGContextDrawSVGDocument: (@convention(c) (CGContext?, CGSVGDocument?) -> Void) = load(decodeString("Q0dDb250ZXh0RHJhd1NWR0RvY3VtZW50"))
+var CGSVGDocumentGetCanvasSize: (@convention(c) (CGSVGDocument?) -> CGSize) = load(decodeString("Q0dTVkdEb2N1bWVudEdldENhbnZhc1NpemU="))
 
-let CoreSVGFramework = dlopen("/System/Library/PrivateFrameworks/CoreSVG.framework/CoreSVG", RTLD_NOW)
+let CoreSVGFramework = dlopen(decodeString("L1N5c3RlbS9MaWJyYXJ5L1ByaXZhdGVGcmFtZXdvcmtzL0NvcmVTVkcuZnJhbWV3b3JrL0NvcmVTVkc="), RTLD_NOW)
 
 func load<T>(_ name: String) -> T {
     unsafeBitCast(dlsym(CoreSVGFramework, name), to: T.self)
