@@ -1,5 +1,5 @@
 //
-//  LatexRenderer.swift
+//  LaTeXRenderer.swift
 //  MarkdownView
 //
 //  Created by Andrew Zheng on 7/30/24.
@@ -8,8 +8,8 @@
 import MathJaxSwift
 import SwiftUI
 
-public enum LatexRenderer {
-    public enum LatexRendererError: Error {
+public enum LaTeXRenderer {
+    public enum LaTeXRendererError: Error {
         case mathJaxUninitialized
         case svgNoData
         case couldNotCreateSVG
@@ -57,7 +57,7 @@ public enum LatexRenderer {
     }
     
     public static func renderSVG(latexString: String) throws -> String {
-        guard let mathJax else { throw LatexRendererError.mathJaxUninitialized }
+        guard let mathJax else { throw LaTeXRendererError.mathJaxUninitialized }
         var latexSVG = try mathJax.tex2svg(latexString, inputOptions: texOptions)
         
         // original:
@@ -70,8 +70,8 @@ public enum LatexRenderer {
     }
     
     public static func svgToImage(svgString: String, svgImageScale: CGFloat) throws -> Image {
-        guard let data = svgString.data(using: .utf8) else { throw LatexRendererError.svgNoData }
-        guard let svg = CoreSVG(data) else { throw LatexRendererError.couldNotCreateSVG }
+        guard let data = svgString.data(using: .utf8) else { throw LaTeXRendererError.svgNoData }
+        guard let svg = CoreSVG(data) else { throw LaTeXRendererError.couldNotCreateSVG }
 
         let size = CGSize(width: svg.size.width * svgImageScale, height: svg.size.height * svgImageScale)
         

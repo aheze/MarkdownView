@@ -29,7 +29,7 @@ extension Renderer {
             let svgImageScale = configuration.svgImageScale * configuration.svgImageScaleMultiplier
             
             do {
-                let image = try LatexRenderer.renderImage(
+                let image = try LaTeXRenderer.renderImage(
                     latexString: latexString,
                     svgImageScale: svgImageScale
                 )
