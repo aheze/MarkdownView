@@ -28,4 +28,7 @@ struct RendererConfiguration: Equatable {
     var unorderedListBullet: String
     
     var tableOptions: TableOptions
+    
+    var svgImageScaleMultiplier: CGFloat
+    var svgImageScale: CGFloat
 }

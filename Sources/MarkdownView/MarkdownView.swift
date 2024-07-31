@@ -25,6 +25,9 @@ public struct MarkdownView: View {
     @Environment(\.listIndent) private var listIndent
     @Environment(\.unorderedListBullet) private var unorderedListBullet
     @Environment(\.tableOptions) private var tableOptions
+    @Environment(\.svgImageScaleMultiplier) private var svgImageScaleMultiplier
+    @ScaledMetric(relativeTo: .body) var svgImageScale = 1.0
+
 
     // Update content 0.3s after the user stops entering.
     @StateObject private var contentUpdater = ContentUpdater()
@@ -124,7 +127,9 @@ extension MarkdownView {
             codeBlockTheme: codeHighlighterTheme,
             listIndent: listIndent,
             unorderedListBullet: unorderedListBullet,
-            tableOptions: tableOptions
+            tableOptions: tableOptions,
+            svgImageScaleMultiplier: svgImageScaleMultiplier,
+            svgImageScale: svgImageScale
         )
     }
 }

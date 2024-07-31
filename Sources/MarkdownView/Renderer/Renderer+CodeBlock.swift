@@ -7,7 +7,7 @@ extension Renderer {
     mutating func visitInlineCode(_ inlineCode: InlineCode) -> Result {
         var attributedString = AttributedString(stringLiteral: inlineCode.code)
       
-        let latex: String? = {
+        let latexString: String? = {
             if inlineCode.code.hasPrefix("$$") && inlineCode.code.hasSuffix("$$") {
                 return String(inlineCode.code.dropFirst(2).dropLast(2))
             }
@@ -27,9 +27,14 @@ extension Renderer {
             return nil
         }()
         
-        if let latex {
+        if let latexString {
+            let svgImageScale = configuration.svgImageScale * configuration.svgImageScaleMultiplier
+            
             do {
-                let image = try LatexRenderer.renderImage(latexString: latex)
+                let image = try LatexRenderer.renderImage(
+                    latexString: latexString,
+                    svgImageScale: svgImageScale
+                )
                 return Result(SwiftUI.Text(image))
             } catch {
                 print("Inline LaTeX error: \(error)")
