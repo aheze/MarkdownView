@@ -30,6 +30,7 @@ public struct MarkdownView: View {
 
     // Update content 0.3s after the user stops entering.
     @StateObject private var contentUpdater = ContentUpdater()
+    @StateObject private var latexPreprocessor = LaTeXPreprocessor()
     @State private var representedView = AnyView(EmptyView()) // RenderedView
 
     /// Parse the Markdown and render it as a single `View`.
@@ -81,7 +82,7 @@ public struct MarkdownView: View {
         .if(renderingMode == .immediate && renderingThread == .background) { content in
             content
                 // Immediately update MarkdownView when text changes.
-                .onChange(of: text, perform: makeView(text:))
+                .onChange(of: text, perform: makeView)
         }
         // Load view immediately after the first launch.
         // Receive configuration changes and reload MarkdownView to fit.
@@ -91,9 +92,12 @@ public struct MarkdownView: View {
 
     private func makeView(text: String) {
         let timer = TimeElapsed()
-        representedView = _makeView(text: text)
-        MarkdownTextStorage.default.text = text
-        print("Update Markdown: \(timer)")
+        let processedText = latexPreprocessor.process(newInput: text)
+        
+        print("Process text: \(timer)")
+        representedView = _makeView(text: processedText)
+        MarkdownTextStorage.default.text = processedText
+        
     }
 
     private func _makeView(text: String) -> AnyView {
