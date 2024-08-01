@@ -32,6 +32,12 @@ class LaTeXPreprocessor: ObservableObject {
     func processIncrementally(input: String) -> String {
         let (cleanOutput, rawInput): (String, String) = {
             if let cleanSnapshot = self.cleanSnapshot {
+                // string changes
+                guard cleanSnapshot.inputMaxIndex <= input.endIndex else {
+                    self.cleanSnapshot = nil
+                    return ("", input)
+                }
+                
                 let cleanOutput = String(cleanSnapshot.outputSubstring)
                 let rawInput = String(input[cleanSnapshot.inputMaxIndex ..< input.endIndex])
                 return (cleanOutput, rawInput)
@@ -44,7 +50,6 @@ class LaTeXPreprocessor: ObservableObject {
         let (cleanSnapshot, output) = process(input: rawInput)
         let finalOutput = cleanOutput + output
 
-        print("existing clean output: ✅\(cleanOutput)🏁")
         if let cleanSnapshot {
             if let existingCleanSnapshot = self.cleanSnapshot {
                 // append to the existing

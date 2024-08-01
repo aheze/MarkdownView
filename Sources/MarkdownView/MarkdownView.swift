@@ -92,14 +92,14 @@ public struct MarkdownView: View {
 
     private func makeView(text: String) {
         let timer = TimeElapsed()
-        
+
         let processedText = latexPreprocessor.processIncrementally(input: text)
-        
-//        print("Process text: \(timer)")
-        
+
         representedView = _makeView(text: processedText)
-        MarkdownTextStorage.default.text = processedText
+
+        print("Update markdown: \(timer)")
         
+        MarkdownTextStorage.default.text = processedText
     }
 
     private func _makeView(text: String) -> AnyView {
@@ -143,24 +143,23 @@ extension MarkdownView {
 class TimeElapsed: CustomStringConvertible {
     private let startTime: CFAbsoluteTime
     private var endTime: CFAbsoluteTime?
-    
+
     init() {
         startTime = CFAbsoluteTimeGetCurrent()
     }
-    
+
     var description: String {
         time
     }
-    
+
     var time: String {
         let format = String(format: "%.5f", duration)
         let string = "[\(format)s]"
         return string
     }
-    
+
     var duration: Double {
         let endTime = CFAbsoluteTimeGetCurrent()
         return endTime - startTime
     }
 }
-
