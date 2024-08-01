@@ -42,12 +42,15 @@ class LaTeXPreprocessor: ObservableObject {
         }()
 
         let (cleanSnapshot, output) = process(input: rawInput)
+        let finalOutput = cleanOutput + output
+
+        print("existing clean output: ✅\(cleanOutput)🏁")
         if let cleanSnapshot {
             if let existingCleanSnapshot = self.cleanSnapshot {
                 // append to the existing
                 self.cleanSnapshot = CleanSnapshot(
-                    inputMaxIndex: existingCleanSnapshot.inputSubstring.index(existingCleanSnapshot.inputMaxIndex, offsetBy: cleanSnapshot.inputMaxIndex.utf16Offset(in: rawInput)),
-                    outputMaxIndex: existingCleanSnapshot.outputSubstring.index(existingCleanSnapshot.outputMaxIndex, offsetBy: cleanSnapshot.outputMaxIndex.utf16Offset(in: cleanSnapshot.outputSubstring)),
+                    inputMaxIndex: input.index(existingCleanSnapshot.inputMaxIndex, offsetBy: cleanSnapshot.inputMaxIndex.utf16Offset(in: rawInput)),
+                    outputMaxIndex: finalOutput.index(existingCleanSnapshot.outputMaxIndex, offsetBy: cleanSnapshot.outputMaxIndex.utf16Offset(in: cleanSnapshot.outputSubstring)),
                     inputSubstring: existingCleanSnapshot.inputSubstring + cleanSnapshot.inputSubstring,
                     outputSubstring: existingCleanSnapshot.outputSubstring + cleanSnapshot.outputSubstring
                 )
@@ -56,7 +59,6 @@ class LaTeXPreprocessor: ObservableObject {
             }
         }
         
-        let finalOutput = cleanOutput + output
         return finalOutput
     }
     
@@ -92,8 +94,8 @@ class LaTeXPreprocessor: ObservableObject {
 
             output = output.replacingOccurrences(of: #"\\\("#, with: #"`\\("#, options: .regularExpression)
             output = output.replacingOccurrences(of: #"\\\["#, with: #"`\\["#, options: .regularExpression)
-            output = output.replacingOccurrences(of: "\\)", with: "\\)`", options: .regularExpression)
-            output = output.replacingOccurrences(of: "\\]", with: "\\]`", options: .regularExpression)
+            output = output.replacingOccurrences(of: #"\\\)"#, with: #"\\)`"#, options: .regularExpression)
+            output = output.replacingOccurrences(of: #"\\\]"#, with: #"\\]`"#, options: .regularExpression)
             
             // MARK: - find last index of closing delimiter
            

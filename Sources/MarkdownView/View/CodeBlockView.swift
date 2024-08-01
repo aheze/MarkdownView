@@ -27,11 +27,11 @@ struct HighlightedCodeBlock: View {
             .padding(.bottom, 12)
 
             Group {
-                if let attributedCode {
-                    SwiftUI.Text(attributedCode)
-                } else {
+//                if let attributedCode {
+//                    SwiftUI.Text(attributedCode)
+//                } else {
                     SwiftUI.Text(code)
-                }
+//                }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
