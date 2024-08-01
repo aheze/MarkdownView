@@ -4,7 +4,7 @@ import SwiftUI
 struct FlowLayout: Layout {
     typealias Cache = [ViewRect]
     
-    var verticleSpacing: CGFloat = 0
+    var verticalSpacing: CGFloat = 0
     
     func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout Cache) -> CGSize {
         guard subviews.count != 0 else { return .zero }
@@ -29,7 +29,7 @@ struct FlowLayout: Layout {
                 
                 // This element cannot be accommodated horizontally
                 // Increase the height
-                y += rowHeight + verticleSpacing
+                y += rowHeight + verticalSpacing
                 x = .zero
                 rowHeight = subviewSize.height
             }

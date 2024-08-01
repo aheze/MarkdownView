@@ -5,6 +5,8 @@ struct ViewContent {
     var view: AnyView
     var type: ContentType
 
+    var verticalSpacing: Double = 20
+
     enum ContentType: String {
         case text, view
     }
@@ -86,21 +88,12 @@ extension ViewContent {
         if composedContents.count == 1 {
             self = composedContents[0]
         } else {
-            if #available(iOS 16.0, macOS 13.0, watchOS 9.0, tvOS 16.0, *), autoLayout {
-                let composedView = FlowLayout(verticleSpacing: 8) {
-                    ForEach(composedContents.indices, id: \.self) {
-                        composedContents[$0].content
-                    }
+            let composedView = FlowLayout(verticalSpacing: verticalSpacing) {
+                ForEach(composedContents.indices, id: \.self) {
+                    composedContents[$0].content
                 }
-                view = AnyView(composedView)
-            } else {
-                let composedView = VStack(alignment: alignment, spacing: 8) {
-                    ForEach(composedContents.indices, id: \.self) {
-                        composedContents[$0].content
-                    }
-                }
-                self.view = AnyView(composedView)
             }
+            self.view = AnyView(composedView)
             self.type = .view
             self.text = Text(verbatim: "")
         }
