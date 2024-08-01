@@ -71,8 +71,6 @@ class LaTeXPreprocessor: ObservableObject {
         var output = input
         
         do {
-            // MARK: - convert $$ -> \[, $ -> \(
-
             let timer = TimeElapsed()
             let regexDoubleDollar = try NSRegularExpression(pattern: #"\$\$(.*?)\$\$"#, options: [.dotMatchesLineSeparators])
             
@@ -80,36 +78,24 @@ class LaTeXPreprocessor: ObservableObject {
             // single dollar shouldn't span multiple lines
             let regexSingleDollar = try NSRegularExpression(pattern: #"\$((?:\\.|[^\\\n])*?(?:\\.|[^\\\n$]))\$(?=[\s?!.,:？！。，：)]|$)"#, options: [.dotMatchesLineSeparators])
             
-//            output = regexDoubleDollar.stringByReplacingMatches(in: output, range: NSRange(location: 0, length: output.count), withTemplate: #"\\[$1\\]"#)
-//            output = regexSingleDollar.stringByReplacingMatches(in: output, range: NSRange(location: 0, length: output.count), withTemplate: #"\\($1\\)"#)
-            
-            
+            // MARK: - convert $$ -> \[, $ -> \(
             
             // For double dollar signs
             let doubleRanges = regexDoubleDollar.matches(in: output, range: NSRange(location: 0, length: output.count)).map { $0.range }
-            print("Ranges for double dollar signs: \(doubleRanges)")
             
             // length of string should remain the same, since `\[` and `$$` are both length 2.
             output = regexDoubleDollar.stringByReplacingMatches(in: output, range: NSRange(location: 0, length: output.count), withTemplate: #"\\[$1\\]"#)
             
-            print("Before: \(input.count) -> \(output.count)")
-
             // range in input
             let indexOfClosingSquareOriginal = output.range(of: #"\]"#, options: String.CompareOptions.backwards, range: nil, locale: nil)?.lowerBound
             
             // For single dollar signs
             let singleRanges = regexSingleDollar.matches(in: output, range: NSRange(location: 0, length: output.count)).map { $0.range }
-            print("Ranges for single dollar signs: \(singleRanges)")
             output = regexSingleDollar.stringByReplacingMatches(in: output, range: NSRange(location: 0, length: output.count), withTemplate: #"\\($1\\)"#)
-            
-            print("---")
-            
-            print("output: \(output)")
             
             let indexOfClosingParenOriginal: String.Index? = {
                 let lowerBound = output.range(of: #"\)"#, options: String.CompareOptions.backwards, range: nil, locale: nil)?.lowerBound
                 if let lowerBound {
-                    
                     // for every match, a character was inserted ($ -> \()
                     // to get index in original, need to offset.
                     let lowerBoundInOriginal = output.index(lowerBound, offsetBy: -singleRanges.count)
@@ -132,17 +118,16 @@ class LaTeXPreprocessor: ObservableObject {
             
 //            var inputStaging = input
 //            inputStaging = regexSingleDollar.stringByReplacingMatches(in: inputStaging, range: NSRange(location: 0, length: output.count), withTemplate: #"\$\$1"#)
-//            
+//
 //            let indexOfClosingParen = output.range(of: #"\)"#, options: String.CompareOptions.backwards, range: nil, locale: nil)
 //            let indexOfClosingSquareBracket = output.range(of: #"\]"#, options: String.CompareOptions.backwards, range: nil, locale: nil)
 //            print("indexOfClosingParen: \(indexOfClosingParen?.upperBound) vs \(indexOfClosingSquareBracket?.upperBound)")
-//            
+//
 //            if let indexOfClosingParen {
-//                
+//
 //            }
 
 //            let maxIndex = [indexOfClosingParen, indexOfClosingSquareBracket].compactMap { $0?.upperBound }.max()
-            
             
             // MARK: - surround with backticks
 
