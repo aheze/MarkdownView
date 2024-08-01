@@ -34,19 +34,14 @@ class LaTeXPreprocessor: ObservableObject {
         // addedSubstring is " World"
         let newAddition = newInput.dropFirst(cleanSnapshot.input.count)
         
-        print("newAddition: \(newAddition)")
+//        print("newAddition: \(newAddition)")
         
         let cleanSnapshot = CleanSnapshot(input: newInput, output: newInput)
         self.cleanSnapshot = cleanSnapshot
         
+        process(input: "")
+        
         return newInput
-    }
-    
-    enum LaTeXOpenDelimiter {
-        case singleDollar
-        case doubleDollar
-        case openParenthesis
-        case openSquareBracket
     }
     
     // [ $24 + $32 ] (not latex)
@@ -55,52 +50,62 @@ class LaTeXPreprocessor: ObservableObject {
     
     // takes input and adds backticks.
     // if there is a clean snapshot, return it.
-    func process(input: String) -> (CleanSnapshot?, String) {
-        var openDelimiter: LaTeXOpenDelimiter?
-        var currentLaTeXRun = ""
-        
-        
+    func process(input _: String) -> (CleanSnapshot?, String) {
         var cleanSnapshot: CleanSnapshot?
-        var output = ""
         
-        let arr = Array(input)
-        for char in arr {
+//        let input = #"""
+//        # test.tex
+//        \begin{document}
+//
+//        This is a doc with $math$ in it. $ W o
+//        W linebreak $
+//
+//        Now we have the following \[ offset equation \]
+//
+//        Now we have another $$
+//        offset equation
+//        $$ why would you use this one though
+//
+//        How much would $4 in 1900 be worth now? Answer: $149.61
+//
+//        \end{document}
+//        """#
+        
+        let input = #"""
+        This is a doc with $math$ in it.
+        
+        How much would $4 in 1900 be worth now? Answer: $149.61
+        
+        This is a doc with $math$ in it. $ W o
+        W linebreak $
+
+        Now we have the following \[ offset equation \]
+
+        Now we have another $$
+        offset equation
+        $$ why would you use this one though
+        """#
+        
+        var output = input
+        
+        do {
+            let regexDoubleDollar = try NSRegularExpression(pattern: #"\$\$(.*?)\$\$"#, options: [.dotMatchesLineSeparators])
+            // from https://files.slack.com/files-pri/T7U3XVBLP-F07EJPURN0P/tokenizelatexextensions.js
             
-            if let openDelimiter {
-                currentLaTeXRun.append(char)
-            }
+            // single dollar shouldn't span multiple lines
+            let regexSingleDollar = try NSRegularExpression(pattern: #"\$((?:\\.|[^\\\n])*?(?:\\.|[^\\\n$]))\$(?=[\s?!.,:？！。，：)]|$)"#, options: [.dotMatchesLineSeparators])
             
-            switch char {
-            case "$":
-                
-                
-                if let openDelimiter {
-                    if openDelimiter == .singleDollar {
-                        if currentLaTeXRun.isEmpty {
-                            // $$ (opening)
-                            openDelimiter = .doubleDollar
-                        } else {
-                            // $...$ (this is the closing)
-                            openDelimiter = nil
-                        }
-                    }
-                }
-                break
-            case "\\":
-                break
-            case "(":
-                break
-            case "[":
-                break
-            case ")":
-                break
-            case "]":
-                break
-            default:
-                output.append(char)
-            }
+            output = regexDoubleDollar.stringByReplacingMatches(in: output, range: NSRange(location: 0, length: output.count), withTemplate: #"\\[$1\\]"#)
+            output = regexSingleDollar.stringByReplacingMatches(in: output, range: NSRange(location: 0, length: output.count), withTemplate: #"\\($1\\)"#)
             
+            output = output.replacingOccurrences(of: #"\\\("#, with: #"`\\("#, options: .regularExpression)
+            output = output.replacingOccurrences(of: #"\\\["#, with: #"`\\["#, options: .regularExpression)
+            output = output.replacingOccurrences(of: "\\)", with: "\\)`", options: .regularExpression)
+            output = output.replacingOccurrences(of: "\\]", with: "\\]`", options: .regularExpression)
+            print("🌇: \(input)\n\n✅: \(output)")
             
+        } catch {
+            print("Error creating regex: \(error)")
         }
         
         return (cleanSnapshot, output)
