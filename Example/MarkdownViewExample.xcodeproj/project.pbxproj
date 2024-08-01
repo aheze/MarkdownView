@@ -7,12 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		491455282C5C2D3300824401 /* MarkdownView in Frameworks */ = {isa = PBXBuildFile; productRef = 491455272C5C2D3300824401 /* MarkdownView */; };
+		4914552A2C5C2D8D00824401 /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 491455292C5C2D8D00824401 /* Utilities.swift */; };
 		49E2E8712C5C2CBF00328A10 /* MarkdownViewExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49E2E8702C5C2CBF00328A10 /* MarkdownViewExampleApp.swift */; };
 		49E2E8732C5C2CBF00328A10 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49E2E8722C5C2CBF00328A10 /* ContentView.swift */; };
 		49E2E8752C5C2CC000328A10 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 49E2E8742C5C2CC000328A10 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		491455292C5C2D8D00824401 /* Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
 		49E2E86D2C5C2CBF00328A10 /* MarkdownViewExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MarkdownViewExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		49E2E8702C5C2CBF00328A10 /* MarkdownViewExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownViewExampleApp.swift; sourceTree = "<group>"; };
 		49E2E8722C5C2CBF00328A10 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -25,6 +28,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				491455282C5C2D3300824401 /* MarkdownView in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -52,6 +56,7 @@
 			children = (
 				49E2E8702C5C2CBF00328A10 /* MarkdownViewExampleApp.swift */,
 				49E2E8722C5C2CBF00328A10 /* ContentView.swift */,
+				491455292C5C2D8D00824401 /* Utilities.swift */,
 				49E2E8742C5C2CC000328A10 /* Assets.xcassets */,
 				49E2E8762C5C2CC000328A10 /* MarkdownViewExample.entitlements */,
 			);
@@ -74,6 +79,9 @@
 			dependencies = (
 			);
 			name = MarkdownViewExample;
+			packageProductDependencies = (
+				491455272C5C2D3300824401 /* MarkdownView */,
+			);
 			productName = MarkdownViewExample;
 			productReference = 49E2E86D2C5C2CBF00328A10 /* MarkdownViewExample.app */;
 			productType = "com.apple.product-type.application";
@@ -102,6 +110,9 @@
 				Base,
 			);
 			mainGroup = 49E2E8642C5C2CBF00328A10;
+			packageReferences = (
+				491455262C5C2D3300824401 /* XCRemoteSwiftPackageReference "MarkdownView" */,
+			);
 			productRefGroup = 49E2E86E2C5C2CBF00328A10 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -127,6 +138,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4914552A2C5C2D8D00824401 /* Utilities.swift in Sources */,
 				49E2E8732C5C2CBF00328A10 /* ContentView.swift in Sources */,
 				49E2E8712C5C2CBF00328A10 /* MarkdownViewExampleApp.swift in Sources */,
 			);
@@ -345,6 +357,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		491455262C5C2D3300824401 /* XCRemoteSwiftPackageReference "MarkdownView" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/aheze/MarkdownView";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		491455272C5C2D3300824401 /* MarkdownView */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 491455262C5C2D3300824401 /* XCRemoteSwiftPackageReference "MarkdownView" */;
+			productName = MarkdownView;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 49E2E8652C5C2CBF00328A10 /* Project object */;
 }
