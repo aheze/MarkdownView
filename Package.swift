@@ -30,7 +30,8 @@ let package = Package(
                     condition: .when(platforms: [.iOS, .macOS])
                 ),
                 .product(name: "MathJaxSwift", package: "MathJaxSwift"),
-            ]
+            ],
+            path: "Sources"
         ),
     ]
 )
