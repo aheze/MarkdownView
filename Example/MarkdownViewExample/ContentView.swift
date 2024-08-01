@@ -10,8 +10,9 @@ import SwiftUI
 
 struct ContentView: View {
     @State var markdown = """
-    This is *some* **markdown**!
+    **Swift** *Markdown* `Testing`
 
+    ---
 
     """
 
@@ -45,10 +46,10 @@ struct ContentView: View {
                 HStack {
                     Button("Start Stream") {
                         Task {
-                            for line in markdownFull.chunked(into: 5) {
+                            for line in Constants.californiaPopulation.chunked(into: 5) {
                                 markdown.append("\(line)")
 
-                                try await Task.sleep(for: .seconds(0.04))
+                                try await Task.sleep(for: .seconds(0.03))
                             }
                         }
                     }

@@ -59,8 +59,7 @@ extension Renderer {
             let strokeWidth = configuration.tableOptions.strokeWidth
 
             ForEach(contents.indices, id: \.self) { index in
-                strokeColor
-                    .frame(height: strokeWidth)
+                Divider()
 
                 contents[index].content
                     .font(font)
