@@ -16,6 +16,7 @@
 
 /* Begin PBXFileReference section */
 		491455292C5C2D8D00824401 /* Utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
+		4914552B2C5C2F3300824401 /* MarkdownView */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = MarkdownView; path = ..; sourceTree = "<group>"; };
 		49E2E86D2C5C2CBF00328A10 /* MarkdownViewExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MarkdownViewExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		49E2E8702C5C2CBF00328A10 /* MarkdownViewExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownViewExampleApp.swift; sourceTree = "<group>"; };
 		49E2E8722C5C2CBF00328A10 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -38,6 +39,7 @@
 		49E2E8642C5C2CBF00328A10 = {
 			isa = PBXGroup;
 			children = (
+				4914552B2C5C2F3300824401 /* MarkdownView */,
 				49E2E86F2C5C2CBF00328A10 /* MarkdownViewExample */,
 				49E2E86E2C5C2CBF00328A10 /* Products */,
 			);

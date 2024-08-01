@@ -76,13 +76,13 @@ class LaTeXPreprocessor: ObservableObject {
     
     // regex from https://files.slack.com/files-pri/T7U3XVBLP-F07EJPURN0P/tokenizelatexextensions.js (single dollar shouldn't span multiple lines)
     func process(input: String) -> (CleanSnapshot?, String) {
-        var inputCopy = input
         var cleanSnapshot: CleanSnapshot?
         var output = input
         
+        /// used for checking where the last clean char is in the **input**
+        var inputCopy = input
+        
         do {
-            let singleDollarReplacement = "᎒"
-            
             let regexDoubleDollar = try NSRegularExpression(pattern: #"\$\$(.*?)\$\$"#, options: [.dotMatchesLineSeparators])
             let regexSingleDollar = try NSRegularExpression(pattern: #"\$((?:\\.|[^\\\n])*?(?:\\.|[^\\\n$]))\$(?=[\s?!.,:？！。，：)]|$)"#, options: [.dotMatchesLineSeparators])
             
@@ -90,10 +90,12 @@ class LaTeXPreprocessor: ObservableObject {
             
             // For double dollar signs
             output = regexDoubleDollar.stringByReplacingMatches(in: output, range: NSRange(location: 0, length: output.count), withTemplate: #"\\[$1\\]"#)
+            
             output = regexSingleDollar.stringByReplacingMatches(in: output, range: NSRange(location: 0, length: output.count), withTemplate: #"\\($1\\)"#)
             
+            // replace double dollar with brackets in the original.
+            // we won't replace single dollar because you never know if another $ will appear next in the stream.
             inputCopy = regexDoubleDollar.stringByReplacingMatches(in: inputCopy, range: NSRange(location: 0, length: inputCopy.count), withTemplate: #"\\[$1\\]"#)
-            inputCopy = regexSingleDollar.stringByReplacingMatches(in: inputCopy, range: NSRange(location: 0, length: inputCopy.count), withTemplate: singleDollarReplacement + "$1" + singleDollarReplacement) // keep same width with rare unicode char
             
             // MARK: - surround with backticks
 
@@ -104,16 +106,16 @@ class LaTeXPreprocessor: ObservableObject {
             
             // MARK: - find last index of closing delimiter
            
-            let inputClosingDollar = inputCopy.range(of: singleDollarReplacement, options: String.CompareOptions.backwards, range: nil, locale: nil)
             let inputClosingParen = inputCopy.range(of: #"\)"#, options: String.CompareOptions.backwards, range: nil, locale: nil)
             let inputClosingSquareBracket = inputCopy.range(of: #"\]"#, options: String.CompareOptions.backwards, range: nil, locale: nil)
             
             let outputClosingParen = output.range(of: #"\)`"#, options: String.CompareOptions.backwards, range: nil, locale: nil)
             let outputClosingSquareBracket = output.range(of: #"\]`"#, options: String.CompareOptions.backwards, range: nil, locale: nil)
             
-            let inputMaxIndex = [inputClosingDollar, inputClosingParen, inputClosingSquareBracket].compactMap { $0?.upperBound }.max()
+            let inputMaxIndex = [inputClosingParen, inputClosingSquareBracket].compactMap { $0?.upperBound }.max()
             let outputMaxIndex = [outputClosingParen, outputClosingSquareBracket].compactMap { $0?.upperBound }.max()
             
+            // make sure both exist
             if let inputMaxIndex, let outputMaxIndex {
                 cleanSnapshot = CleanSnapshot(
                     inputMaxIndex: inputMaxIndex,

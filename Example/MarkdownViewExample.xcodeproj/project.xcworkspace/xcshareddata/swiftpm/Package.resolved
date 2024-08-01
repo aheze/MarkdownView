@@ -1,5 +1,4 @@
 {
-  "originHash" : "4a47737c14c35e296ca0714acabc55e65638dc8fc7057e0756dd3559541128b7",
   "pins" : [
     {
       "identity" : "highlightr",
@@ -8,15 +7,6 @@
       "state" : {
         "revision" : "bcf2d0590f32ac2528feb72d7e34f5b463801a47",
         "version" : "2.2.1"
-      }
-    },
-    {
-      "identity" : "markdownview",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/aheze/MarkdownView",
-      "state" : {
-        "branch" : "main",
-        "revision" : "c759663b94f1ef6fa7df8818abb66bec953d7eef"
       }
     },
     {
@@ -47,5 +37,5 @@
       }
     }
   ],
-  "version" : 3
+  "version" : 2
 }

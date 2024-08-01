@@ -18,7 +18,8 @@ struct HighlightedCodeBlock: View {
         VStack(spacing: 0) {
             HStack {
                 codeLanguage
-                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                Spacer()
 
                 CopyButton(content: code)
                     .scaleEffect(0.9, anchor: .trailing) // make slightly smaller
@@ -30,7 +31,7 @@ struct HighlightedCodeBlock: View {
 //                if let attributedCode {
 //                    SwiftUI.Text(attributedCode)
 //                } else {
-                    SwiftUI.Text(code)
+                SwiftUI.Text(code)
 //                }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
