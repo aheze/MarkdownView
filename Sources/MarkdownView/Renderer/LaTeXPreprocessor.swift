@@ -53,6 +53,8 @@ class LaTeXPreprocessor: ObservableObject {
         This is a doc with $math$ in it. $4 + $5
         
         $$long string$$
+        
+        Some more text
         """#
         process(input: str)
         
@@ -65,69 +67,31 @@ class LaTeXPreprocessor: ObservableObject {
     
     // takes input and adds backticks.
     // if there is a clean snapshot, return it.
+    
+    // regex from https://files.slack.com/files-pri/T7U3XVBLP-F07EJPURN0P/tokenizelatexextensions.js (single dollar shouldn't span multiple lines)
     func process(input: String) -> (CleanSnapshot?, String) {
         var cleanSnapshot: CleanSnapshot?
+        
+        var inputCopy = input
         
         var output = input
         
         do {
             let timer = TimeElapsed()
-            let regexDoubleDollar = try NSRegularExpression(pattern: #"\$\$(.*?)\$\$"#, options: [.dotMatchesLineSeparators])
             
-            // from https://files.slack.com/files-pri/T7U3XVBLP-F07EJPURN0P/tokenizelatexextensions.js
-            // single dollar shouldn't span multiple lines
+            let singleDollarReplacement = "᎒"
+            
+            let regexDoubleDollar = try NSRegularExpression(pattern: #"\$\$(.*?)\$\$"#, options: [.dotMatchesLineSeparators])
             let regexSingleDollar = try NSRegularExpression(pattern: #"\$((?:\\.|[^\\\n])*?(?:\\.|[^\\\n$]))\$(?=[\s?!.,:？！。，：)]|$)"#, options: [.dotMatchesLineSeparators])
             
             // MARK: - convert $$ -> \[, $ -> \(
             
             // For double dollar signs
-            let doubleRanges = regexDoubleDollar.matches(in: output, range: NSRange(location: 0, length: output.count)).map { $0.range }
-            
-            // length of string should remain the same, since `\[` and `$$` are both length 2.
             output = regexDoubleDollar.stringByReplacingMatches(in: output, range: NSRange(location: 0, length: output.count), withTemplate: #"\\[$1\\]"#)
-            
-            // range in input
-            let indexOfClosingSquareOriginal = output.range(of: #"\]"#, options: String.CompareOptions.backwards, range: nil, locale: nil)?.lowerBound
-            
-            // For single dollar signs
-            let singleRanges = regexSingleDollar.matches(in: output, range: NSRange(location: 0, length: output.count)).map { $0.range }
             output = regexSingleDollar.stringByReplacingMatches(in: output, range: NSRange(location: 0, length: output.count), withTemplate: #"\\($1\\)"#)
             
-            let indexOfClosingParenOriginal: String.Index? = {
-                let lowerBound = output.range(of: #"\)"#, options: String.CompareOptions.backwards, range: nil, locale: nil)?.lowerBound
-                if let lowerBound {
-                    // for every match, a character was inserted ($ -> \()
-                    // to get index in original, need to offset.
-                    let lowerBoundInOriginal = output.index(lowerBound, offsetBy: -singleRanges.count)
-                    return lowerBoundInOriginal
-                }
-                
-                return nil
-            }()
-            
-            if let indexOfClosingSquareOriginal {
-                print("closing square: \(input[indexOfClosingSquareOriginal ..< input.index(indexOfClosingSquareOriginal, offsetBy: 2)])")
-            }
-            
-            if let indexOfClosingParenOriginal {
-                print("closing paren: \(input[indexOfClosingParenOriginal ..< input.index(indexOfClosingParenOriginal, offsetBy: 5)])")
-            }
-            
-            // get the index of the last closing delimiter in the original input.
-            // could be $, $$, \), or \].
-            
-//            var inputStaging = input
-//            inputStaging = regexSingleDollar.stringByReplacingMatches(in: inputStaging, range: NSRange(location: 0, length: output.count), withTemplate: #"\$\$1"#)
-//
-//            let indexOfClosingParen = output.range(of: #"\)"#, options: String.CompareOptions.backwards, range: nil, locale: nil)
-//            let indexOfClosingSquareBracket = output.range(of: #"\]"#, options: String.CompareOptions.backwards, range: nil, locale: nil)
-//            print("indexOfClosingParen: \(indexOfClosingParen?.upperBound) vs \(indexOfClosingSquareBracket?.upperBound)")
-//
-//            if let indexOfClosingParen {
-//
-//            }
-
-//            let maxIndex = [indexOfClosingParen, indexOfClosingSquareBracket].compactMap { $0?.upperBound }.max()
+            inputCopy = regexDoubleDollar.stringByReplacingMatches(in: inputCopy, range: NSRange(location: 0, length: inputCopy.count), withTemplate: #"\\[$1\\]"#)
+            inputCopy = regexSingleDollar.stringByReplacingMatches(in: inputCopy, range: NSRange(location: 0, length: inputCopy.count), withTemplate: singleDollarReplacement + "$1" + singleDollarReplacement) // keep same width with rare unicode char
             
             // MARK: - surround with backticks
 
@@ -141,8 +105,23 @@ class LaTeXPreprocessor: ObservableObject {
             
             // MARK: - find last index of closing delimiter
            
-//            let indexOfClosingParen = output.range(of: #"\)`"#, options: String.CompareOptions.backwards, range: nil, locale: nil)
-//            let indexOfClosingSquareBracket = output.range(of: #"\]`"#, options: String.CompareOptions.backwards, range: nil, locale: nil)
+            let inputClosingDollar = inputCopy.range(of: singleDollarReplacement, options: String.CompareOptions.backwards, range: nil, locale: nil)
+            let inputClosingParen = inputCopy.range(of: #"\)"#, options: String.CompareOptions.backwards, range: nil, locale: nil)
+            let inputClosingSquareBracket = inputCopy.range(of: #"\]"#, options: String.CompareOptions.backwards, range: nil, locale: nil)
+            
+            let outputClosingParen = output.range(of: #"\)`"#, options: String.CompareOptions.backwards, range: nil, locale: nil)
+            let outputClosingSquareBracket = output.range(of: #"\]`"#, options: String.CompareOptions.backwards, range: nil, locale: nil)
+            
+            let inputMaxIndex = [inputClosingDollar, inputClosingParen, inputClosingSquareBracket].compactMap { $0?.upperBound }.max()
+            let outputMaxIndex = [outputClosingParen, outputClosingSquareBracket].compactMap { $0?.upperBound }.max()
+            
+            print("inputMaxIndex: \(inputMaxIndex), \(outputMaxIndex)")
+            
+            print("-------")
+            if let inputMaxIndex, let outputMaxIndex {
+                print("[\(input[input.startIndex..<inputMaxIndex])] ... [\(output[output.startIndex..<outputMaxIndex])]")
+            }
+            
 //            print("indexOfClosingParen: \(indexOfClosingParen?.upperBound) vs \(indexOfClosingSquareBracket?.upperBound)")
 //
 //            let maxIndex = [indexOfClosingParen, indexOfClosingSquareBracket].compactMap { $0?.upperBound }.max()
