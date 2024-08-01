@@ -28,6 +28,7 @@ struct ContentView: View {
                 HStack {
                     Button("Start Stream") {
                         Task {
+//                            for line in Constants.californiaPopulation.chunked(into: 5) {
                             for line in Constants.californiaPopulationConcise.chunked(into: 5) {
                                 markdown.append("\(line)")
 

@@ -58,13 +58,39 @@ extension Renderer {
 
 extension Renderer {
     mutating func visitCodeBlock(_ codeBlock: CodeBlock) -> Result {
-        Result {
+        let code = codeBlock.code.trimmingCharacters(in: .newlines)
+        
+        let latexString: String? = {
+            if code.hasPrefix(#"\["#) && code.hasSuffix(#"\]"#) {
+                return String(codeBlock.code.dropFirst(2).dropLast(2))
+            }
+            
+            return nil
+        }()
+        
+        if let latexString {
+            let svgImageScale = configuration.svgImageScale * configuration.svgImageScaleMultiplier
+            
+            do {
+                let image = try LaTeXRenderer.renderImage(
+                    latexString: latexString,
+                    svgImageScale: svgImageScale
+                )
+                .renderingMode(.template)
+                
+                return Result(SwiftUI.Text(image).foregroundColor(.green))
+            } catch {
+                print("Inline LaTeX error: \(error)")
+            }
+        }
+        
+        return Result {
             #if os(watchOS) || os(tvOS)
             SwiftUI.Text(codeBlock.code)
             #else
             HighlightedCodeBlock(
                 language: codeBlock.language,
-                code: codeBlock.code.trimmingCharacters(in: .newlines),
+                code: code,
                 theme: configuration.codeBlockTheme
             )
             #endif

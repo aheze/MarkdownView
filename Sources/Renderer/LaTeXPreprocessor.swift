@@ -121,30 +121,23 @@ class LaTeXPreprocessor: ObservableObject {
                     let indentationRange = Range(match.range(at: 2), in: output)
                 else { continue }
                 
-                // number of spaces
-                if let indentationRange = Range(match.range(at: 2), in: output) {
-                    let indentation = output[indentationRange]
+                let content = output[contentRange].trimmingCharacters(in: .whitespacesAndNewlines)
+                let indentation = output[indentationRange]
                     
-                    print("indentation: \(indentation.count), \(indentation.isEmpty)")
-                    if !indentation.isEmpty {
-                        let replacement = #"""
-                        
-                        \#(indentation)```
-                        \#(indentation)\[
-                        \#(indentation)\#(output[contentRange].trimmingCharacters(in: .whitespacesAndNewlines))
-                        \#(indentation)\]
-                        \#(indentation)```
-                        """#
-                        
-                        print("r: \(replacement)")
-                        output.replaceSubrange(range, with: replacement)
-                    }
+                if !indentation.isEmpty {
+                    let replacement = #"""
                     
-//
+                    \#(indentation)```
+                    \#(indentation)\[
+                    \#(indentation)\#(content)
+                    \#(indentation)\]
+                    \#(indentation)```
+                    """#
+                        
+                    output.replaceSubrange(range, with: replacement)
                 }
             }
-//            print("ranges: \(ranges)")
-            
+
             // MARK: - find last index of closing delimiter
            
             let inputClosingParen = inputCopy.range(of: #"\)"#, options: String.CompareOptions.backwards, range: nil, locale: nil)
