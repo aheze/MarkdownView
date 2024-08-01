@@ -9,7 +9,7 @@ import SwiftUI
 
 struct TableOptions: Equatable {
     var strokeColor = Color.primary.opacity(0.25)
-    var strokeWidth = CGFloat(0.5)
+    var strokeWidth = CGFloat(0.4)
     var cellPadding = EdgeInsets(top: 8, leading: 12, bottom: 8, trailing: 12)
 }
 

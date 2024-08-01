@@ -4,13 +4,29 @@ import SwiftUI
 extension Renderer {
     mutating func visitTable(_ table: Markdown.Table) -> Result {
         Result {
+            let strokeColor = configuration.tableOptions.strokeColor
+            let strokeWidth = configuration.tableOptions.strokeWidth
+
             Grid(horizontalSpacing: 0, verticalSpacing: 0) {
-                GridRow { visitTableHead(table.head).content }
+                visitTableHead(table.head).content
                 visitTableBody(table.body).content
             }
-            .overlay {
-                Rectangle()
-                    .stroke(configuration.tableOptions.strokeColor, lineWidth: configuration.tableOptions.strokeWidth)
+            .backgroundPreferenceValue(VerticalBordersPreferenceKey.self) { preferences in
+                GeometryReader { geometry in
+                    ForEach(0 ..< preferences.count, id: \.self) { index in
+                        let bounds = geometry[preferences[index]]
+
+                        strokeColor
+                            .frame(width: strokeWidth)
+                            .frame(height: bounds.height)
+                            .offset(x: bounds.minX - (strokeWidth * 0.5))
+                            .offset(y: bounds.minY)
+                    }
+                }
+            }
+            .background {
+                RoundedRectangle(cornerRadius: 8)
+                    .strokeBorder(strokeColor, lineWidth: strokeWidth)
             }
         }
     }
@@ -22,11 +38,14 @@ extension Renderer {
             let foregroundStyle = configuration.foregroundStyleGroup.tableHeader
             let cellPadding = configuration.tableOptions.cellPadding
 
-            ForEach(contents.indices, id: \.self) {
-                contents[$0].content
-                    .font(font)
-                    .foregroundStyle(foregroundStyle)
-                    .padding(cellPadding)
+            GridRow {
+                ForEach(contents.indices, id: \.self) { index in
+                    contents[index].content
+                        .font(font)
+                        .foregroundStyle(foregroundStyle)
+                        .padding(cellPadding)
+                        .anchorPreference(key: VerticalBordersPreferenceKey.self, value: .bounds) { index == 0 ? [] : [$0] }
+                }
             }
         }
     }
@@ -36,15 +55,22 @@ extension Renderer {
             let contents = contents(of: body)
             let font = configuration.fontGroup.tableBody
             let foregroundStyle = configuration.foregroundStyleGroup.tableBody
-            let cellPadding = configuration.tableOptions.cellPadding
+            let strokeColor = configuration.tableOptions.strokeColor
+            let strokeWidth = configuration.tableOptions.strokeWidth
 
-            ForEach(contents.indices, id: \.self) {
-                Divider()
+            ForEach(contents.indices, id: \.self) { index in
+                strokeColor
+                    .frame(height: strokeWidth)
 
-                contents[$0].content
+                contents[index].content
                     .font(font)
                     .foregroundStyle(foregroundStyle)
-                    .padding(cellPadding)
+                    .background {
+                        if index % 2 == 0 {
+                            Color.primary
+                                .opacity(0.02)
+                        }
+                    }
             }
         }
     }
@@ -53,14 +79,17 @@ extension Renderer {
         Result {
             let cells = row.children.map { $0 as! Markdown.Table.Cell }
             let contents = cells.map { visitTableCell($0) }
-            if #available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *) {
-                GridRow {
-                    ForEach(contents.indices, id: \.self) { index in
-                        let tableCell = cells[index]
-                        contents[index].content
-                            .gridColumnAlignment(tableCell.alignment)
-                            .gridCellColumns(Int(tableCell.colspan))
-                    }
+            let cellPadding = configuration.tableOptions.cellPadding
+
+            GridRow {
+                ForEach(contents.indices, id: \.self) { index in
+                    let tableCell = cells[index]
+                    contents[index].content
+                        .padding(cellPadding)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .gridColumnAlignment(tableCell.alignment)
+                        .gridCellColumns(Int(tableCell.colspan))
+                        .anchorPreference(key: VerticalBordersPreferenceKey.self, value: .bounds) { index == 0 ? [] : [$0] }
                 }
             }
         }
@@ -81,5 +110,15 @@ private struct _TableViewModifier: ViewModifier {
                 RoundedRectangle(cornerRadius: 8, style: .continuous)
                     .stroke(.quaternary, lineWidth: 2)
             }
+    }
+}
+
+struct VerticalBordersPreferenceKey: PreferenceKey {
+    typealias Value = [Anchor<CGRect>]
+
+    static var defaultValue: Value = []
+
+    static func reduce(value: inout Value, nextValue: () -> Value) {
+        value.append(contentsOf: nextValue())
     }
 }

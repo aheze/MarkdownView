@@ -25,53 +25,69 @@ struct HighlightedCodeBlock: View {
                     .scaleEffect(0.9, anchor: .trailing) // make slightly smaller
             }
             .font(.callout)
-            .padding(.bottom, 12)
+            .padding(.horizontal, 14)
+            .padding(.vertical, 10)
+            .padding(.top, 1)
+            .background {
+                Color.primary.opacity(0.03)
+            }
 
             Group {
-//                if let attributedCode {
-//                    SwiftUI.Text(attributedCode)
-//                } else {
-                SwiftUI.Text(code)
-//                }
+                if let attributedCode {
+                    SwiftUI.Text(attributedCode)
+                } else {
+                    SwiftUI.Text(code)
+                }
             }
+            .lineSpacing(5)
+            .font(font.codeBlock)
+            .padding(.horizontal, 14)
+            .padding(.vertical, 12)
+            .padding(.bottom, 2)
             .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .lineSpacing(5)
-        .font(font.codeBlock)
-        .padding(.horizontal, 14)
-        .padding(.vertical, 12)
-        .background(.primary.opacity(0.05), in: RoundedRectangle(cornerRadius: 8))
+        .background(Color.primary.opacity(0.02))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
         .task(id: colorScheme) {
             let theme = colorScheme == .dark ? theme.darkModeThemeName : theme.lightModeThemeName
             Highlightr.shared?.setTheme(to: theme)
-            await highlight()
+            await highlight(code: code)
         }
         .onChange(of: theme) { newTheme in
             let theme = colorScheme == .dark ? newTheme.darkModeThemeName : newTheme.lightModeThemeName
             Highlightr.shared?.setTheme(to: theme)
             Task {
-                await highlight()
+                await highlight(code: code)
             }
         }
         .onChange(of: colorScheme) { newColorTheme in
             let theme = newColorTheme == .dark ? theme.darkModeThemeName : theme.lightModeThemeName
             Highlightr.shared?.setTheme(to: theme)
             Task {
-                await highlight()
+                await highlight(code: code)
+            }
+        }
+        .onChange(of: code) { newValue in
+            Task {
+                await highlight(code: newValue)
             }
         }
     }
 
     @ViewBuilder
     private var codeLanguage: some View {
-        if let language {
-            SwiftUI.Text(language.uppercased())
-                .font(.callout.monospaced())
-                .foregroundStyle(.secondary)
+        Group {
+            if let language {
+                SwiftUI.Text(language)
+            }
         }
+        .textCase(.uppercase)
+        .font(.callout.monospaced())
+        .foregroundColor(.primary)
+        .opacity(0.3)
     }
 
-    @Sendable private func highlight() async {
+    @Sendable private func highlight(code: String) async {
         guard let highlighter = Highlightr.shared else { return }
         let language = highlighter.supportedLanguages().first(where: { $0.lowercased() == self.language?.lowercased() })
         if let highlightedCode = highlighter.highlight(code, as: language) {
