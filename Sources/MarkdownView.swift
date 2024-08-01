@@ -97,7 +97,7 @@ public struct MarkdownView: View {
 
         representedView = _makeView(text: processedText)
 
-        print("Update markdown: \(timer)")
+//        print("Update markdown: \(timer)")
 
         MarkdownTextStorage.default.text = processedText
     }

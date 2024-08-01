@@ -10,6 +10,57 @@ import Foundation
 enum Constants {}
 
 extension Constants {
+    static let testBlockLatex = #"""
+    Here is some text
+
+    $$\sqrt{4}$$
+
+    More text
+    """#
+
+    static let codeBlock = #"""
+    Hello!
+    ```
+    let str = "Hello"
+    ```
+    
+    More
+    """#
+
+    static let californiaPopulationConcise = #"""
+    Here is some text
+
+    1. **Calculate the Means**:
+
+       \[
+       \bar{x} = \frac{0 + 1 + 2 + 3 + 4}{5} = 2
+       \]
+
+       \[
+       \bar{y} = \frac{39.50 + 39.24 + 39.14 + 39.10 + 39.00}{5} = 39.196
+       \]
+
+    2. do math
+    """#
+
+    static let mathTableCode = #"""
+    What is $\sqrt{16^{4}}$?
+
+    Some latex $\displaystyle 1+\frac{e^{-2\pi}} {1+\frac{e^{-4\pi}} {1+\frac{e^{-6\pi}} {1+\frac{e^{-8\pi}} {1+\cdots} } } }$ end of latex
+
+    $$\sqrt{2}$$
+
+    State | Population
+    --- | ---
+    CA | 100
+    TX | 50
+
+    ```
+    let str = "Hello!"
+    let age = 50
+    ```
+    """#
+
     static let californiaPopulation = #"""
     Here’s a table showing California’s population over the last five years. The data is hypothetical and used for illustration:
 

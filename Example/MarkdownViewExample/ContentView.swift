@@ -16,24 +16,6 @@ struct ContentView: View {
 
     """
 
-    @State var markdownFull = #"""
-    What is $\sqrt{16^{4}}$?
-
-    Some latex $\displaystyle 1+\frac{e^{-2\pi}} {1+\frac{e^{-4\pi}} {1+\frac{e^{-6\pi}} {1+\frac{e^{-8\pi}} {1+\cdots} } } }$ end of latex
-
-    $$\sqrt{2}$$
-
-    State | Population
-    --- | ---
-    CA | 100
-    TX | 50
-
-    ```
-    let str = "Hello!"
-    let age = 50
-    ```
-    """#
-
     var body: some View {
         VStack {
             VStack {
@@ -46,7 +28,7 @@ struct ContentView: View {
                 HStack {
                     Button("Start Stream") {
                         Task {
-                            for line in Constants.californiaPopulation.chunked(into: 5) {
+                            for line in Constants.californiaPopulationConcise.chunked(into: 5) {
                                 markdown.append("\(line)")
 
                                 try await Task.sleep(for: .seconds(0.03))

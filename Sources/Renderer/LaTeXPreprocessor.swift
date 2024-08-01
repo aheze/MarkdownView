@@ -49,6 +49,8 @@ class LaTeXPreprocessor: ObservableObject {
 
         let (cleanSnapshot, output) = process(input: rawInput)
         let finalOutput = cleanOutput + output
+        
+//        print("finalOutput: \(finalOutput)")
 
         if let cleanSnapshot {
             if let existingCleanSnapshot = self.cleanSnapshot {
@@ -100,9 +102,48 @@ class LaTeXPreprocessor: ObservableObject {
             // MARK: - surround with backticks
 
             output = output.replacingOccurrences(of: #"\\\("#, with: #"`\\("#, options: .regularExpression)
-            output = output.replacingOccurrences(of: #"\\\["#, with: #"`\\["#, options: .regularExpression)
             output = output.replacingOccurrences(of: #"\\\)"#, with: #"\\)`"#, options: .regularExpression)
+            
+            // MARK: - surrounce blocks with triple backticks
+
+//            output = output.replacingOccurrences(of: #"\\\[(.*?)\\\]"#, with: #"`\\[$1\\]`"#, options: .regularExpression)
+            
+            output = output.replacingOccurrences(of: #"\\\["#, with: #"`\\["#, options: .regularExpression)
             output = output.replacingOccurrences(of: #"\\\]"#, with: #"\\]`"#, options: .regularExpression)
+            
+            // add triple backticks now. need to maintain spacing though
+            let regexOutput = try NSRegularExpression(pattern: #"`\\\[(.*?)(^ *)\\\]`"#, options: [.dotMatchesLineSeparators, .anchorsMatchLines])
+            let matches = regexOutput.matches(in: output, range: NSRange(location: 0, length: output.count))
+            for match in matches.reversed() {
+                guard
+                    let range = Range(match.range, in: output),
+                    let contentRange = Range(match.range(at: 1), in: output),
+                    let indentationRange = Range(match.range(at: 2), in: output)
+                else { continue }
+                
+                // number of spaces
+                if let indentationRange = Range(match.range(at: 2), in: output) {
+                    let indentation = output[indentationRange]
+                    
+                    print("indentation: \(indentation.count), \(indentation.isEmpty)")
+                    if !indentation.isEmpty {
+                        let replacement = #"""
+                        
+                        \#(indentation)```
+                        \#(indentation)\[
+                        \#(indentation)\#(output[contentRange].trimmingCharacters(in: .whitespacesAndNewlines))
+                        \#(indentation)\]
+                        \#(indentation)```
+                        """#
+                        
+                        print("r: \(replacement)")
+                        output.replaceSubrange(range, with: replacement)
+                    }
+                    
+//
+                }
+            }
+//            print("ranges: \(ranges)")
             
             // MARK: - find last index of closing delimiter
            
