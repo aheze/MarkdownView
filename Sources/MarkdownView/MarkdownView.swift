@@ -92,7 +92,7 @@ public struct MarkdownView: View {
 
     private func makeView(text: String) {
         let timer = TimeElapsed()
-        let processedText = latexPreprocessor.process(newInput: text)
+        let processedText = latexPreprocessor.processIncrementally(input: text)
         
         print("Process text: \(timer)")
         representedView = _makeView(text: processedText)
