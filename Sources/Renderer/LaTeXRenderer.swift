@@ -66,6 +66,8 @@ public enum LaTeXRenderer {
         // `in` is supported and makes it much more clear
         latexSVG = latexSVG.replacingOccurrences(of: "ex", with: "in")
         
+        print(latexSVG)
+        
         return latexSVG
     }
     

@@ -10,6 +10,20 @@ import Foundation
 enum Constants {}
 
 extension Constants {
+//    static let bigLatexTest = #"""
+//    $\displaystyle 1+\frac{e^{-2\pi}} {1+\frac{e^{-4\pi}} {1+\frac{e^{-6\pi}} {1+\frac{e^{-8\pi}} {1+\cdots} } } }$
+//    """#
+
+    static let bigLatexTest = #"""
+    \[
+    \begin{CD}
+    h^A(A) @>\eta_A>> F(A) \\
+    @V{h^A(g)}VV @VV{F(g)}V \\
+    h^A(C) @>>\eta_C> F(C)
+    \end{CD}
+    \]
+    """#
+
     static let testBlockLatex = #"""
     Here is some text
 
@@ -23,7 +37,7 @@ extension Constants {
     ```
     let str = "Hello"
     ```
-    
+
     More
     """#
 
