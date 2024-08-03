@@ -23,7 +23,33 @@ extension Constants {
     \end{CD}
     \]
     """#
-
+    
+//    static let bigLatexTest = #"""
+//    \[
+//    \begin{tikzcd}[row sep=6ex,column sep=2em]
+//    &&& \mathrm{MC}_1 \arrow[rr,blue] \arrow[d,blue] \arrow[ddl,dash] &&
+//          \mathrm{TM}_1 \arrow[ddl,dash] \\
+//    &&& \mathrm{BM}_1 \arrow[rr,blue] \arrow[ddl,dash] &&
+//          \mathrm{FM}_1 \arrow[u,blue] \arrow[ddl,dash]
+//    \\ [-4ex]
+//    && \mathrm{MC}_2 \arrow[rr,blue] \arrow[d,blue] \arrow[ddl,dash] &&
+//         \mathrm{TM}_2 \arrow[ddl,dash] \\
+//    && \mathrm{BM}_2 \arrow[rr,blue] \arrow[ddl,dash] &&
+//         \mathrm{FM}_2 \arrow[u,blue] \arrow[ddl,dash]
+//    \\ [-4ex]
+//    & \mathrm{MC}_3 \arrow[rr,blue] \arrow[d,blue] \arrow[ddl,dash] &&
+//          \mathrm{TM}_3 \arrow[ddl,dash] \\
+//    & \mathrm{BM}_3 \arrow[rr,blue] \arrow[ddl,dash] &&
+//          \mathrm{FM}_3 \arrow[u,blue] \arrow[ddl,dash]
+//    \\ [-4ex]
+//    \mathrm{MC}_4 \arrow[rr,blue] \arrow[d,blue] &&
+//          \mathrm{TM}_4 \\
+//    \mathrm{BM}_4 \arrow[rr,blue] &&
+//          \mathrm{FM}_4 \arrow[u,blue]
+//    \end{tikzcd}
+//    \]
+//    """#
+    
     static let testBlockLatex = #"""
     Here is some text
 
